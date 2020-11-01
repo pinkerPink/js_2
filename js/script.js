@@ -34,7 +34,7 @@ window.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  let deadline = "2020-11-01 00:00:00";
+  let deadline = "2020-11-02 00:00:00";
 
   function getTimeRemaining(endtime) {
     function zero(x) {
@@ -64,12 +64,12 @@ window.addEventListener("DOMContentLoaded", function () {
 
     function updateClock() {
       let t = getTimeRemaining(endtime);
-      hours.textContent = t.hours;
-      minutes.textContent = t.minutes;
-      seconds.textContent = t.seconds;
-
       if (t.total <= 0) {
         clearInterval(timeInterval);
+      } else {
+        hours.textContent = t.hours;
+        minutes.textContent = t.minutes;
+        seconds.textContent = t.seconds;
       }
     }
   }
@@ -100,4 +100,42 @@ window.addEventListener("DOMContentLoaded", function () {
       document.body.style.overflow = "hidden";
     });
   }
+
+  let message = {
+    loading: "Загрузка...",
+    success: "Спасибо! Скоро мы с вами свяжемся.",
+    failure: "Что-то пошло не так :c",
+  }
+
+  let form = document.querySelector(".main-form"),
+    input = form.getElementsByTagName("input"),
+    statusMessage = document.createElement("div");
+
+  statusMessage.classList.add("status");
+
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    form.appendChild(statusMessage);
+
+    let request = new XMLHttpRequest();
+    request.open("POST", "server.php");
+    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    let formData = new FormData(form);
+    request.send(formData);
+
+    request.addEventListener("readystatechange", function() {
+      if (request.readyState < 4) {
+        statusMessage.innerHTML = message.loading;
+      } else if (request.readyState === 4 && request.status == 200) {
+        statusMessage.innerHTML = message.success;
+      } else {
+        statusMessage.innerHTML = message.failure;
+      }
+    });
+
+    for (let i = 0; i < input.length; i++) {
+      input[i].value = "";
+    }
+  });
 });
