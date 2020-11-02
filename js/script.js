@@ -34,7 +34,7 @@ window.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  let deadline = "2020-11-02 00:00:00";
+  let deadline = "2020-11-02 21:30:00";
 
   function getTimeRemaining(endtime) {
     function zero(x) {
@@ -65,6 +65,9 @@ window.addEventListener("DOMContentLoaded", function () {
     function updateClock() {
       let t = getTimeRemaining(endtime);
       if (t.total <= 0) {
+        hours.textContent = "00";
+        minutes.textContent = "00";
+        seconds.textContent = "00";
         clearInterval(timeInterval);
       } else {
         hours.textContent = t.hours;
@@ -138,4 +141,88 @@ window.addEventListener("DOMContentLoaded", function () {
       input[i].value = "";
     }
   });
+
+  // Slider
+
+  let slideIndex = 1;
+  let slides = document.querySelectorAll(".slider-item");
+  let prev = document.querySelector(".prev");
+  let next = document.querySelector(".next");
+  let dotsWrap = document.querySelector(".slider-dots");
+  let dots = document.querySelectorAll(".dot");
+
+  function showSlides(n) {
+    if (n > slides.length) slideIndex = 1;
+    if (n < 1) slideIndex = slides.length;
+
+    slides.forEach((item) => item.style.display = "none");
+    dots.forEach((item) => item.classList.remove("dot-active"));
+
+    slides[slideIndex - 1].style.display = "block";
+    dots[slideIndex - 1].classList.add("dot-active");
+  }
+
+  showSlides(slideIndex);
+
+  function plusSlides(n) {
+    showSlides(slideIndex += n);
+  }
+
+  function currentSlide(n) {
+    showSlides(slideIndex = n);
+  }
+
+  prev.addEventListener("click", function() {
+    plusSlides(-1);
+  });
+
+  next.addEventListener("click", function() {
+    plusSlides(1);
+  });
+
+  dotsWrap.addEventListener("click", function(event) {
+    console.log("asdasd");
+    for (let i = 0; i < dots.length + 1; i++) {
+      if (event.target.classList.contains("dot") && event.target == dots[i - 1]) {
+        currentSlide(i);
+      }
+    }
+  });
+
+  // Calc
+
+  let persons = document.querySelectorAll(".counter-block-input")[0];
+  let restDays = document.querySelectorAll(".counter-block-input")[1];
+  let place = document.getElementById("select");
+  let totalValue = document.getElementById("total");
+  let  personsSum = 0;
+  let daysSum = 0;
+  let total = 0;
+
+  totalValue.innerHTML = 0;
+
+  persons.addEventListener("change", function() {
+    personsSum = +this.value;
+    total = (daysSum + personsSum) * 4000;
+
+    if (restDays.value == "" || persons.value == "") totalValue.innerHTML = 0;
+    else totalValue.innerHTML = total;
+  });
+
+  restDays.addEventListener("change", function() {
+    daysSum = +this.value;
+    total = (daysSum + personsSum) * 4000;
+
+    if (persons.value == "" || restDays.value == "") totalValue.innerHTML = 0;
+    else totalValue.innerHTML = total;
+  });
+
+  place.addEventListener("change", function() {
+    if (restDays.value == "" || persons.value == "") totalValue.innerHTML = 0;
+    else {
+      let a = total;
+      totalValue.innerHTML = a * this.options[this.selectedIndex].value;
+    }
+  });
+
 });
